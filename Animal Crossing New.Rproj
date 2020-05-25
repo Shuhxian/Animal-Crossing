@@ -1,13 +1,20 @@
-Version: 1.0
-
-RestoreWorkspace: Default
-SaveWorkspace: Default
-AlwaysSaveHistory: Default
-
-EnableCodeIndexing: Yes
-UseSpacesForTab: Yes
-NumSpacesForTab: 2
-Encoding: UTF-8
-
-RnwWeave: Sweave
-LaTeX: pdfLaTeX
+user<-read.csv("C:/Users/User-PC/Downloads/animal-crossing/user_reviews.csv")
+critics<-read.csv("C:/Users/User-PC/Downloads/animal-crossing/critic.csv")
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+user_mod<-user%>%
+group_by(grade)%>%
+summarise(Total=(count=n()))
+critic_mod<-critics%>%
+mutate(grade_mod=(as.integer(grade/10)))
+critic_mod<-critic_mod%>%
+group_by(grade_mod)%>%
+summarise(Total=(count=n()))
+g1<-ggplot()+geom_line(critic_mod,mapping = aes(x=grade_mod,y=Total,color="green"))+labs(x="Grade",y="Total")+ggtitle("Critic Review")
+g2<-ggplot()+geom_line(user_mod,mapping=aes(x=grade,y=Total,color="red")) +labs(x="Grade",y="Total")+ggtitle("User Review")
+g1grob<-ggplotGrob(g1)
+g2grob<-ggplotGrob(g2)
+grid.arrange(g1grob,g2grob)
+g3<-ggplot()+geom_line(user_mod,mapping=aes(x=grade,y=Total,color="red"))+geom_line(critic_mod,mapping = aes(x=grade_mod,y=Total,color="green"))+labs(x="Grade",y="Total")+ggtitle("Total Review")
+g3
